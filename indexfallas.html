@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTROL DE RECLAMOS CUENTAS STREAMING VENDE Y GANA</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background-color: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .form-group button { display: block; width: 100%; padding: 10px; background-color: #ed7318; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .form-group button:hover { background-color: #d65f12; }
+        .copy-button { background-color: #28a745; }
+        .copy-button:hover { background-color: #218838; }
+        .hidden { display: none; }
+        .agenda-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .agenda-table th, .agenda-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .agenda-table th { background-color: #ed7318; color: white; }
+        .agenda-table tbody tr:nth-child(odd) { background-color: #f9f9f9; }
+        .filter-group { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h1>Iniciar Sesión</h1>
+        <div class="form-group">
+            <label for="login-email">Correo:</label>
+            <input type="email" id="login-email" placeholder="Ingrese su correo">
+        </div>
+        <div class="form-group">
+            <label for="login-password">Contraseña:</label>
+            <input type="password" id="login-password" placeholder="Ingrese su contraseña">
+        </div>
+        <div class="form-group">
+            <button onclick="login()">Iniciar Sesión</button>
+        </div>
+        <div class="form-group">
+            <button onclick="showRegister()">Crear Cuenta</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="register-container">
+        <h1>Crear Cuenta</h1>
+        <div class="form-group">
+            <label for="register-email">Correo:</label>
+            <input type="email" id="register-email" placeholder="Ingrese su correo">
+        </div>
+        <div class="form-group">
+            <label for="register-password">Contraseña:</label>
+            <input type="password" id="register-password" placeholder="Ingrese su contraseña">
+        </div>
+        <div class="form-group">
+            <button onclick="register()">Registrarse</button>
+        </div>
+        <div class="form-group">
+            <button onclick="showLogin()">Cancelar</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="app-container">
+        <h1>CONTROL DE RECLAMOS CUENTAS STREAMING VENDE Y GANA</h1>
+        <div class="form-group">
+            <label for="cuenta">Cuenta:</label>
+            <input type="text" id="cuenta" placeholder="Ingrese la cuenta" required>
+        </div>
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" placeholder="Ingrese el teléfono" required>
+        </div>
+        <div class="form-group">
+            <label for="correo">Correo:</label>
+            <input type="email" id="correo" placeholder="Ingrese el correo" required>
+        </div>
+        <div class="form-group">
+            <label for="servicio">Tipo de Servicio:</label>
+            <input list="servicios" id="servicio" placeholder="Ingrese el tipo de servicio" required>
+            <datalist id="servicios">
+                <option value="NETFLIX">
+                <option value="AMAZON">
+                <option value="DISNEY">
+                <option value="HBO">
+            </datalist>
+        </div>
+        <div class="form-group">
+            <label for="reclamo">Respuesta del Reclamo:</label>
+            <textarea id="reclamo" placeholder="Ingrese la respuesta del reclamo" required></textarea>
+            <button class="copy-button" onclick="copiarReclamo()">Copiar Respuesta del Reclamo</button>
+        </div>
+        <div class="form-group">
+            <label for="ejecutivo">Nombre del Ejecutivo:</label>
+            <input list="ejecutivos" id="ejecutivo" placeholder="Ingrese el nombre del ejecutivo" required>
+            <datalist id="ejecutivos">
+                <option value="Thani">
+                <option value="Ricardo">
+                <option value="Milagro">
+            </datalist>
+        </div>
+        <div class="form-group">
+            <label for="estatus">Estatus:</label>
+            <input list="estatuses" id="estatus" placeholder="Ingrese el estatus" required>
+            <datalist id="estatuses">
+                <option value="PENDIENTE">
+                <option value="SOLVENTADO">
+                <option value="REINTEGRO">
+                <option value="EN RECLAMO CON PROVEEDOR">
+            </datalist>
+        </div>
+        <div class="form-group">
+            <button onclick="agregarEvento()">Agregar Evento</button>
+        </div>
+        <div class="filter-group">
+            <label for="filtrarFecha">Filtrar por Fecha:</label>
+            <input type="date" id="filtrarFecha" onchange="filtrarEventos()">
+            <label for="filtrarCuenta">Filtrar por Tipo de Cuenta:</label>
+            <input type="text" id="filtrarCuenta" onkeyup="filtrarEventos()" placeholder="Ingrese el tipo de cuenta">
+        </div>
+        <table class="agenda-table">
+            <thead>
+                <tr>
+                    <th>Cuenta</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Tipo de Servicio</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Respuesta del Reclamo</th>
+                    <th>Nombre del Ejecutivo</th>
+                    <th>Estatus</th>
+                </tr>
+            </thead>
+            <tbody id="agenda-body">
+                <!-- Los eventos se agregarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function showRegister() {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('register-container').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('register-container').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+        }
+
+        function login() {
+            var email = document.getElementById('login-email').value;
+            var password = document.getElementById('login-password').value;
+            // Aquí iría el código para validar el inicio de sesión
+            // Por ahora, simplemente mostramos la aplicación
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+        }
+
+        function register() {
+            var email = document.getElementById('register-email').value;
+            var password = document.getElementById('register-password').value;
+            // Aquí iría el código para registrar el usuario
+            // Por ahora, simplemente mostramos la pantalla de inicio de sesión
+            showLogin();
+        }
+
+        function agregarEvento() {
+            var cuenta = document.getElementById('cuenta').value;
+            var telefono = document.getElementById('telefono').value;
+            var correo = document.getElementById('correo').value;
+            var servicio = document.getElementById('servicio').value;
+            var reclamo = document.getElementById('reclamo').value;
+            var ejecutivo = document.getElementById('ejecutivo').value;
+            var estatus = document.getElementById('estatus').value;
+
+            if (cuenta && telefono && correo && servicio && reclamo && ejecutivo && estatus) {
+                var tableBody = document.getElementById('agenda-body');
+                var row = document.createElement('tr');
+
+                var cellCuenta = document.createElement('td');
+                var cellTelefono = document.createElement('td');
+                var cellCorreo = document.createElement('td');
+                var cellServicio = document.createElement('td');
+                var cellFecha = document.createElement('td');
+                var cellHora = document.createElement('td');
+                var cellReclamo = document.createElement('td');
+                var cellEjecutivo = document.createElement('td');
+                var cellEstatus = document.createElement('td');
+
+                cellCuenta.textContent = cuenta;
+                cellTelefono.textContent = telefono;
+                cellCorreo.textContent = correo;
+                cellServicio.textContent = servicio;
+
+                // Obtener fecha y hora del sistema
+                var fecha = new Date();
+                var fechaFormateada = fecha.toLocaleDateString();
+                var horaFormateada = fecha.toLocaleTimeString();
+                cellFecha.textContent = fechaFormateada;
+                cellHora.textContent = horaFormateada;
+
+                cellReclamo.textContent = reclamo;
+                cellEjecutivo.textContent = ejecutivo;
+                cellEstatus.textContent = estatus;
+
+                row.appendChild(cellCuenta);
+                row.appendChild(cellTelefono);
+                row.appendChild(cellCorreo);
+                row.appendChild(cellServicio);
+                row.appendChild(cellFecha);
+                row.appendChild(cellHora);
+                row.appendChild(cellReclamo);
+                row.appendChild(cellEjecutivo);
+                row.appendChild(cellEstatus);
+
+                tableBody.appendChild(row);
+
+                document.getElementById('cuenta').value = '';
+                document.getElementById('telefono').value = '';
+                document.getElementById('correo').value = '';
+                document.getElementById('servicio').value = '';
+                document.getElementById('reclamo').value = '';
+                document.getElementById('ejecutivo').value = '';
+                document.getElementById('estatus').value = '';
+
+                // Mostrar alerta de agradecimiento con emoji
+                alert('GRACIAS POR TRABAJAR TAN DURO 😊');
+            } else {
+                alert('Por favor, complete todos los campos.');
+            }
+        }
+
+        function copiarReclamo() {
+            var reclamo = document.getElementById('reclamo');
+            reclamo.select();
+            reclamo.setSelectionRange(0, 99999); // Para dispositivos móviles
+            document.execCommand("copy");
+            alert("Respuesta del Reclamo copiada: " + reclamo.value);
+        }
+
+        function filtrarEventos() {
+            var filterDate = document.getElementById('filtrarFecha').value;
+            var filterCuenta = document.getElementById('filtrarCuenta').value.toLowerCase();
+            var tableBody = document.getElementById('agenda-body');
+            var rows = tableBody.getElementsByTagName('tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var cellFecha = row.getElementsByTagName('td')[4];
+                var cellCuenta = row.getElementsByTagName('td')[0];
+                var fecha = cellFecha.textContent;
+                var cuenta = cellCuenta.textContent.toLowerCase();
+
+                if ((fecha === filterDate || filterDate === '') && (cuenta.includes(filterCuenta) || filterCuenta === '')) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
